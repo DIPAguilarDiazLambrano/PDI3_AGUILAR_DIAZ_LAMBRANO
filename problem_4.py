@@ -69,9 +69,12 @@ def hsi2rgb(pixelHSI):
 #-------------------------------------------------------------------------------
 def equ_intensity(image):
     hsi_image = imageRGB2HSI(image)
-    hsi_image[:,:,2] = cv2.equalizeHist(hsi_image[:,:,2])
-    return imageHSI2RGB(hsi_image)
-#-------------------------------------------------------------------------------
+    intensity = hsi_image[:,:,2]
+    equ = cv2.equalizeHist(intensity)
+    return intensity
+#    hsi_image[:,:,2] = cv2.equalizeHist(np.floor(255*intensity))/255
+#    return imageHSI2RGB(hsi_image)
+#-------------------------------------------------------------------------------    
 def main4():
     filename = 'media/dark_fountain.jpg'
     img = cv2.imread(filename, 1)
@@ -88,3 +91,5 @@ def main4():
     plt.title('Equalized image')
     plt.axis('off')
     plt.show()
+#-------------------------------------------------------------------------------
+main4()
