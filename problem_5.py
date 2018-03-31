@@ -70,40 +70,34 @@ def hsi2rgb(pixelHSI):
     pixelRGB = np.array([R, G, B])
     return pixelRGB
 #-------------------------------------------------------------------------------
-def blurred_hue(image):
+def blurred_image_hue_sat(image):
     hsi_image = imageRGB2HSI(image)
-    hue = hsi_image[0]
-    h,w = hue.shape
-    hsi_image[0] = cv2.blur(hue,(25, 25))    
-    return imageHSI2RGB(hsi_image)
-#-------------------------------------------------------------------------------
-def blurred_sat(image):
-    hsi_image = imageRGB2HSI(image)
-    hue = hsi_image[1]
-    hsi_image[1] = cv2.blur(hue,(25, 25)) 
-    return imageHSI2RGB(hsi_image)
-#-------------------------------------------------------------------------------
-def main5():
-    filename = 'media/squares.jpg'
-    image = cv2.cvtColor(cv2.imread(filename, 1), cv2.COLOR_BGR2RGB)
-    blur_hue = blurred_hue(image)
-    blur_sat = blurred_sat(image)
-    
+    #
+    blur_hue = hsi_image.copy()
+    blur_sat = hsi_image.copy()
+    #
+    blur_hue[:,:,0] = cv2.blur(blur_hue[:,:,0],(25, 25))
+    blur_sat[:,:,1] = cv2.blur(blur_sat[:,:,1],(25, 25))
+    #
     plt.figure()
     plt.imshow(image)
     plt.title('Original')
     plt.axis('off')
     #
     plt.figure()
-    plt.imshow(blur_hue)
+    plt.imshow(imageHSI2RGB(blur_hue))
     plt.title('Blurred Hue image')
     plt.axis('off')
     #
     plt.figure()
-    plt.imshow(blur_sat)
+    plt.imshow(imageHSI2RGB(blur_sat))
     plt.title('Blurred Saturation image')
-    plt.axis('off')
-    
+    plt.axis('off') 
     plt.show()
+#-------------------------------------------------------------------------------
+def main5():
+    filename = 'media/squares.jpg'
+    image = cv2.cvtColor(cv2.imread(filename, 1), cv2.COLOR_BGR2RGB)
+    blurred_image_hue_sat(image)
 #-------------------------------------------------------------------------------
 main5()
