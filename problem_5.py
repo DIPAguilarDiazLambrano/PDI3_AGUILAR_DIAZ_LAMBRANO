@@ -77,7 +77,7 @@ def blurred_image_hue_sat(image):
     blur_sat = hsi_image.copy()
     #
     blur_hue[:,:,0] = cv2.blur(blur_hue[:,:,0],(25, 25))
-    blur_sat[:,:,1] = cv2.blur(blur_sat[:,:,1],(25, 25))
+    blur_sat[:,:,1] = cv2.blur(255 * blur_sat[:,:,1],(25, 25))/255.0
     #
     plt.figure()
     plt.imshow(image)
