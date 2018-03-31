@@ -19,6 +19,7 @@ def angle(R, G, B):
     return ang
 #-------------------------------------------------------------------------------
 def rgb2hsi(pixelRGB):
+    #print(type(pixelRGB[0]))
     # Normalize pixels values 
     [R, G, B] = np.array(pixelRGB/255.0)
     # Get H value
@@ -67,43 +68,35 @@ def hsi2rgb(pixelHSI):
         G = I * (1 - S)
         B = I * (1 + S * np.cos(np.radians(H))/np.cos(np.radians(60 - H)))
         R = 3 * I - (G + B)
+    #R = int(255 * R)
+    #G = int(255 * G)
+    #B = int(255 * B)
+    #pixelRGB = np.array([R, G, B]).astype('uint8')
+    #print(type(pixelRGB[0]))
     pixelRGB = np.array([R, G, B])
     return pixelRGB
-#-------------------------------------------------------------------------------
-def equ_hist(image):
-    #print(type(img))
-    img = image.astype('uint8')
-    # https://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html
-    hist,bins = np.histogram(img.flatten(),256,[0,256])
-    cdf = hist.cumsum()
-    cdf_normalized = cdf * hist.max()/ cdf.max()
-    cdf_m = np.ma.masked_equal(cdf,0)
-    cdf_m = (cdf_m - cdf_m.min())*255/(cdf_m.max()-cdf_m.min())
-    cdf = np.ma.filled(cdf_m,0).astype('uint8')
-    img2 = cdf[img]
-    return img2
-#-------------------------------------------------------------------------------
-def equ_intensity(image):
-    hsi_image = imageRGB2HSI(image)
-    intensity = 255 * hsi_image[:,:,2]
-    hsi_image[:,:,2] = equ_hist(intensity)/255.0
-    return imageHSI2RGB(hsi_image)
 #-------------------------------------------------------------------------------    
-def main4():
-    filename = 'media/dark_fountain.jpg'
-    img = cv2.imread(filename, 1)
-    image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    equalized = equ_intensity(image)
-    #
+#-------------------------------------------------------------------------------    
+def main3():
+    # image are normalized RBG values [0 - 1]
+    img = cv2.imread('media/lena.jpg', cv2.IMREAD_COLOR)
+    original_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    hsi = imageRGB2HSI(original_image)
+    restored = imageHSI2RGB(hsi)
     plt.figure()
-    plt.imshow(image)
-    plt.title('Original')
+    plt.imshow(original_image)
+    plt.title('Original image')
     plt.axis('off')
     #
     plt.figure()
-    plt.imshow(equalized)
-    plt.title('Equalized image')
+    plt.imshow(hsi)
+    plt.title('HSI image')
+    plt.axis('off')
+    #
+    plt.figure()
+    plt.imshow(restored)
+    plt.title('Restored image')
     plt.axis('off')
     plt.show()
 #-------------------------------------------------------------------------------
-main4()
+main3()

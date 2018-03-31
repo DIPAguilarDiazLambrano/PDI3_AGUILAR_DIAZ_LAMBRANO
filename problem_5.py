@@ -70,40 +70,40 @@ def hsi2rgb(pixelHSI):
     pixelRGB = np.array([R, G, B])
     return pixelRGB
 #-------------------------------------------------------------------------------
-def equ_hist(image):
-    #print(type(img))
-    img = image.astype('uint8')
-    # https://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html
-    hist,bins = np.histogram(img.flatten(),256,[0,256])
-    cdf = hist.cumsum()
-    cdf_normalized = cdf * hist.max()/ cdf.max()
-    cdf_m = np.ma.masked_equal(cdf,0)
-    cdf_m = (cdf_m - cdf_m.min())*255/(cdf_m.max()-cdf_m.min())
-    cdf = np.ma.filled(cdf_m,0).astype('uint8')
-    img2 = cdf[img]
-    return img2
-#-------------------------------------------------------------------------------
-def equ_intensity(image):
+def blurred_hue(image):
     hsi_image = imageRGB2HSI(image)
-    intensity = 255 * hsi_image[:,:,2]
-    hsi_image[:,:,2] = equ_hist(intensity)/255.0
+    hue = hsi_image[0]
+    h,w = hue.shape
+    hsi_image[0] = cv2.blur(hue,(25, 25))    
     return imageHSI2RGB(hsi_image)
-#-------------------------------------------------------------------------------    
-def main4():
-    filename = 'media/dark_fountain.jpg'
-    img = cv2.imread(filename, 1)
-    image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    equalized = equ_intensity(image)
-    #
+#-------------------------------------------------------------------------------
+def blurred_sat(image):
+    hsi_image = imageRGB2HSI(image)
+    hue = hsi_image[1]
+    hsi_image[1] = cv2.blur(hue,(25, 25)) 
+    return imageHSI2RGB(hsi_image)
+#-------------------------------------------------------------------------------
+def main5():
+    filename = 'media/squares.jpg'
+    image = cv2.cvtColor(cv2.imread(filename, 1), cv2.COLOR_BGR2RGB)
+    blur_hue = blurred_hue(image)
+    blur_sat = blurred_sat(image)
+    
     plt.figure()
     plt.imshow(image)
     plt.title('Original')
     plt.axis('off')
     #
     plt.figure()
-    plt.imshow(equalized)
-    plt.title('Equalized image')
+    plt.imshow(blur_hue)
+    plt.title('Blurred Hue image')
     plt.axis('off')
+    #
+    plt.figure()
+    plt.imshow(blur_sat)
+    plt.title('Blurred Saturation image')
+    plt.axis('off')
+    
     plt.show()
 #-------------------------------------------------------------------------------
-main4()
+main5()
